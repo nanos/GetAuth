@@ -32,16 +32,19 @@
         </p>
 
         <form id="start" method="post">
-            <input type="hidden" name="client_name" value="TootFinder">
             <input type="hidden" name="redirect_uris" value="">
+            <p>Firstly, give your app a name. This name is for your internal reference only. It will be displayed on your 'Authorized apps' section, so choose something that will help you remember what this is:</p>
             <p>
-                Firstly, provide a list of scopes you need. See <a href="https://docs.joinmastodon.org/api/oauth-scopes/">the documentation</a> for details.
+                <input type="text" required name="client_name" value="" placeholder="GetAuth">
+            </p>
+            <p>
+                Secondly, provide a list of scopes you need. See <a href="https://docs.joinmastodon.org/api/oauth-scopes/">the documentation</a> for details.
             </p>
                 
             <p>
                 <input type="input" name="scopes" placeholder="read" required aria-label="Scopes" style="width: 100%;">
             </p>
-            <p>Then provide your Mastodon Domain:</p>
+            <p>Finally, provide your Mastodon Domain:</p>
             <p>
                 <input name="domain" placeholder="mastodon.social" value="" required>
             </p>
@@ -54,6 +57,7 @@
     <script>
         document.getElementById('start').domain.value = sessionStorage.getItem('domain') ?? '';
         document.getElementById('start').scopes.value = sessionStorage.getItem('scopes') ?? '';
+        document.getElementById('start').client_name.value = sessionStorage.getItem('client_name') ?? '';
         document.getElementById('start').redirect_uris.value = `${window.location.origin}/return.html`;
         document.getElementById('start')
             .addEventListener('submit', (event) => {
@@ -79,6 +83,7 @@
                     return response.json();
                 }).then(data => {
                     sessionStorage.setItem('domain', domain);
+                    sessionStorage.setItem('client_name', event.target.client_name.value);
                     sessionStorage.setItem('client_id', data.client_id);
                     sessionStorage.setItem('scopes', event.target.scopes.value);
                     sessionStorage.setItem('client_secret', data.client_secret);
