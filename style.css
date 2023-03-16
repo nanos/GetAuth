@@ -80,7 +80,7 @@ button {
     border: none;
     cursor: pointer;
     outline: inherit;
-    background-color: var(--accent);
+    background-color: var(--link);
     padding: 0.25em 1em;
     border-radius: 0.5em;
     color: var(--background);
@@ -93,6 +93,10 @@ input {
     border-width: 1px;
     border-color: var(--accent);
     font-size: 16px;
+}
+small {
+    line-height: 140%;
+    display: block;
 }
 
 @media screen and (max-width: 560px) {

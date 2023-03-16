@@ -7,14 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>GetAuth</title>
-    <meta name="description" content="">
+    <meta name="description" content="A very simple tool to get Mastodon OAuth token for testing purposes.">
 
     <meta property="og:title" content="GetAuth">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="">
-    <meta property="og:description" content="">
-    <meta property="og:image" content="image.png">
-
+    <meta property="og:description" content="A very simple tool to get Mastodon OAuth token for testing purposes.">
 
     <link rel="stylesheet" href="style.css?v=1.0">
 
@@ -28,24 +25,22 @@
             This is a really simple tool to get a valid Mastodon OAuth2 token for use with the Mastodon API.
         </p>
         <p>
-            Everything here happens in your browser - nothing is stored on the server.
+            Everything here happens in your browser - there is no server side component to. <a
+                href="https://github.com/nanos/https://github.com/nanos/GetAuth">View source on GitHub.</a>
         </p>
-
+        <hr>
         <form id="start" method="post">
             <input type="hidden" name="redirect_uris" value="">
-            <p>Firstly, give your app a name. This name is for your internal reference only. It will be displayed on your 'Authorized apps' section, so choose something that will help you remember what this is:</p>
-            <p>
+            <p>Firstly, give your app a name. This name is for your internal reference only. <br>
                 <input type="text" required name="client_name" value="" placeholder="GetAuth">
+                <small>This name will be displayed on your 'Authorized apps' section in Mastodon, so choose something that will help you remember what this is.</small>
             </p>
             <p>
-                Secondly, provide a list of scopes you need. See <a href="https://docs.joinmastodon.org/api/oauth-scopes/">the documentation</a> for details.
-            </p>
-                
-            <p>
+                Secondly, provide a list of scopes you need. See <a href="https://docs.joinmastodon.org/api/oauth-scopes/">the documentation</a> for details.<br>
                 <input type="input" name="scopes" placeholder="read" required aria-label="Scopes" style="width: 100%;">
+                <small>You can list as many scopes as you need - separate them with a whitespace</small>
             </p>
-            <p>Finally, provide your Mastodon Domain:</p>
-            <p>
+            <p>Finally, provide your Mastodon Domain:<br>
                 <input name="domain" placeholder="mastodon.social" value="" required>
             </p>
             <p>
