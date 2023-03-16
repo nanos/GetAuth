@@ -1,0 +1,103 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>TootFinder</title>
+    <meta name="description" content="">
+
+    <meta property="og:title" content="TootFinder">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="">
+    <meta property="og:description" content="">
+    <meta property="og:image" content="image.png">
+
+
+    <link rel="stylesheet" href="style.css?v=1.0">
+
+</head>
+
+<body>
+    <main>
+
+        <h1>GetAuth</h1>
+        <p>
+            This is a really simple tool to get a valid Mastodon OAuth2 token for use with the Mastodon API.
+        </p>
+        <p>
+            Everything here happens in your browser - nothing is stored on the server.
+        </p>
+
+        <form id="start" method="post">
+            <input type="hidden" name="client_name" value="TootFinder">
+            <input type="hidden" name="redirect_uris" value="">
+            <p>
+                Firstly, provide a list of scopes you need. See <a href="https://docs.joinmastodon.org/api/oauth-scopes/">the documentation</a> for details.
+            </p>
+                
+            <p>
+                <input type="input" name="scopes" placeholder="read" required aria-label="Scopes" style="width: 100%;">
+            </p>
+            <p>Then provide your Mastodon Domain:</p>
+            <p>
+                <input name="domain" placeholder="mastodon.social" value="" required>
+            </p>
+            <p>
+                <button type="submit">Go</button>
+            </p>
+        </form>
+    </main>
+
+    <script>
+        document.getElementById('start').domain.value = sessionStorage.getItem('domain') ?? '';
+        document.getElementById('start').scopes.value = sessionStorage.getItem('scopes') ?? '';
+        document.getElementById('start').redirect_uris.value = `${window.location.origin}/return.html`;
+        document.getElementById('start')
+            .addEventListener('submit', (event) => {
+                let domain = event.target.domain.value;
+
+                if(domain.startsWith('https://')) {
+                    domain = domain.replace('https', '');
+                }
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                fetch(`https://${domain}/api/v1/apps`, {
+                    method: 'POST',
+                    body: new FormData(event.target)
+                }).then(response => {
+                    if(response.status === 422) {
+                        throw new Error(`Got a 422 error from ${domain}. Are you sure the scopes you provided are valid?`);
+                    }
+                    if(response.status !== 200) {
+                       throw new Exception('');
+                    }
+                    return response.json();
+                }).then(data => {
+                    sessionStorage.setItem('domain', domain);
+                    sessionStorage.setItem('client_id', data.client_id);
+                    sessionStorage.setItem('scopes', event.target.scopes.value);
+                    sessionStorage.setItem('client_secret', data.client_secret);
+
+                    const qry = new URLSearchParams();
+                    qry.append('response_type', 'code');
+                    qry.append('client_id', data.client_id);
+                    qry.append('redirect_uri', event.target.redirect_uris.value)
+                    qry.append('scope', event.target.scopes.value)
+
+                    window.location = `https://${domain}/oauth/authorize?${qry}`
+                })
+                .catch((error) => {
+                    alert(error.message);
+                });
+            })
+    </script>
+    <!-- your content here... -->
+    <!-- <script src="js/scripts.js"></script> -->
+</body>
+
+</html>

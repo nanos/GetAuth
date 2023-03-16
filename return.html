@@ -1,0 +1,92 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>TootFinder</title>
+    <meta name="description" content="">
+
+    <meta property="og:title" content="TootFinder">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="">
+    <meta property="og:description" content="">
+    <meta property="og:image" content="image.png">
+
+
+    <link rel="stylesheet" href="style.css?v=1.0">
+
+</head>
+
+<body>
+    <main>
+
+        <h1>GetAuth</h1>
+
+        <p>
+            Your token is below: <br>
+            <input id="token" readonly disabled value="please wait ...">
+            <button type="button" id="copy">Copy</button>
+        </p>
+
+        <p>Keep this token secret! Anyone with access to this token, has access to your Mastodon account.</p>
+
+        <a class="" href="/">Return to Start</a>
+    </main>
+
+    <script>
+        const search = new URLSearchParams(window.location.search);
+        const code = search.get('code');
+        const domain = sessionStorage.getItem('domain');
+        const client_id = sessionStorage.getItem('client_id');
+        const client_secret = sessionStorage.getItem('client_secret');
+
+        const data = new FormData();
+        data.append('client_id', client_id);
+        data.append('client_secret', client_secret);
+        data.append('redirect_uri', `${window.location.origin}/return.html`);
+        data.append('grant_type', 'authorization_code');
+        data.append('code', code);
+        data.append('scope', sessionStorage.getItem('scopes'));
+
+
+        fetch(`https://${domain}/oauth/token`, {
+                method: 'POST',
+                body: data
+            })
+            .then(response => {
+                if (200 !== response.status) {
+                    throw new Error('This didn\'t work. Please try again!');
+                }
+                return response.json()
+            })
+            .then(data => {
+                sessionStorage.removeItem('client_id');
+                sessionStorage.removeItem('client_secret');
+                document.getElementById('token').value = data.access_token;
+            })
+            .catch((error) => {
+                alert(error.message);
+                window.location = '/index.html';
+            })
+
+        // copy tye post's url when pressing copy
+        document.getElementById('copy').addEventListener('click', () => {
+            // select the input field, both for visual feedback, and so that the user can use CTRL/CMD+C for manual copying,
+            document.getElementById('token').select();
+            navigator.clipboard.writeText(document.getElementById('token').value)
+                .then(() => {
+                    // Confirm this by changing the button text
+                    document.getElementById('copy').innerHTML = 'Copied!';
+                    // restore button text after a second.
+                    window.setTimeout(() => {
+                        document.getElementById('copy').innerHTML = 'Copy';
+                    }, 1000);
+                });
+        });
+    </script>
+</body>
+
+</html>
