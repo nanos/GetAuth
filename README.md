@@ -1,4 +1,4 @@
-# GetAuth
+# GetAuth for Mastodon
 
 A very simple static site to generate Mastodon OAuth tokens. 
 
