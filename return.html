@@ -36,21 +36,20 @@
 
     <script>
         const search = new URLSearchParams(window.location.search);
-        const code = search.get('code');
-        const domain = sessionStorage.getItem('domain');
-        const client_id = sessionStorage.getItem('client_id');
-        const client_secret = sessionStorage.getItem('client_secret');
 
         const data = new FormData();
-        data.append('client_id', client_id);
-        data.append('client_secret', client_secret);
-        data.append('redirect_uri', `${window.location.origin}/return.html`);
+        data.append('client_id', sessionStorage.getItem('client_id'));
+        data.append('client_secret', sessionStorage.getItem('client_secret'));
+        data.append('redirect_uri', new URL('./return.html', window.location));
         data.append('grant_type', 'authorization_code');
-        data.append('code', code);
+        data.append('code', search.get('code'));
         data.append('scope', sessionStorage.getItem('scopes'));
 
+        // remove sensitive data asap
+        sessionStorage.removeItem('client_id');
+        sessionStorage.removeItem('client_secret');
 
-        fetch(`https://${domain}/oauth/token`, {
+        fetch(`https://${sessionStorage.getItem('domain')}/oauth/token`, {
                 method: 'POST',
                 body: data
             })
@@ -61,8 +60,6 @@
                 return response.json()
             })
             .then(data => {
-                sessionStorage.removeItem('client_id');
-                sessionStorage.removeItem('client_secret');
                 document.getElementById('token').value = data.access_token;
             })
             .catch((error) => {

@@ -25,20 +25,21 @@
             This is a really simple tool to get a valid Mastodon OAuth2 token for use with the Mastodon API.
         </p>
         <p>
-            Everything here happens in your browser - there is no server side component to it. <a
-                href="https://github.com/nanos/GetAuth">View source on GitHub.</a>
+            Everything here happens in your browser - there is no server side component, and no logging. 
+            <a href="https://github.com/nanos/GetAuth">View source on GitHub.</a>
         </p>
         <hr>
         <form id="start" method="post">
             <input type="hidden" name="redirect_uris" value="">
-            <p>Firstly, give your app a name. This name is for your internal reference only. <br>
+            <p>Firstly, give your app a name.<br>
                 <input type="text" required name="client_name" value="" placeholder="GetAuth">
                 <small>This name will be displayed on your 'Authorized apps' section in Mastodon, so choose something that will help you remember what this is.</small>
             </p>
             <p>
-                Secondly, provide a list of scopes you need. See <a href="https://docs.joinmastodon.org/api/oauth-scopes/">the documentation</a> for details.<br>
+                Secondly, provide a list of scopes you need.<br>
                 <input type="input" name="scopes" placeholder="read" required aria-label="Scopes" style="width: 100%;">
-                <small>You can list as many scopes as you need - separate them with a whitespace</small>
+                <small> See <a href="https://docs.joinmastodon.org/api/oauth-scopes/">the documentation</a> for
+                    available scopes. You can list as many scopes as you need - separate them with a whitespace</small>
             </p>
             <p>Finally, provide your Mastodon Domain:<br>
                 <input name="domain" placeholder="mastodon.social" value="" required>
@@ -51,16 +52,19 @@
     </main>
     <p><small style="text-align: center;"><a href="https://michael.thms.uk">michael.thms.uk</a></small></p>
     <script>
-        document.getElementById('start').domain.value = sessionStorage.getItem('domain') ?? '';
-        document.getElementById('start').scopes.value = sessionStorage.getItem('scopes') ?? '';
-        document.getElementById('start').client_name.value = sessionStorage.getItem('client_name') ?? '';
-        document.getElementById('start').redirect_uris.value = `${window.location.origin}/return.html`;
-        document.getElementById('start')
+        const form = document.getElementById('start');
+
+        form.domain.value = sessionStorage.getItem('domain') ?? '';
+        form.scopes.value = sessionStorage.getItem('scopes') ?? '';
+        form.client_name.value = sessionStorage.getItem('client_name') ?? '';
+        form.redirect_uris.value = new URL('./return.html', window.location);
+        
+        form
             .addEventListener('submit', (event) => {
                 let domain = event.target.domain.value;
 
                 if(domain.startsWith('https://')) {
-                    domain = domain.replace('https', '');
+                    domain = domain.replace('https://', '');
                 }
 
                 event.preventDefault();
@@ -74,7 +78,7 @@
                         throw new Error(`Got a 422 error from ${domain}. Are you sure the scopes you provided are valid?`);
                     }
                     if(response.status !== 200) {
-                       throw new Exception('');
+                       throw new Exception(`Got error ${response.status} from ${domain}.`);
                     }
                     return response.json();
                 }).then(data => {
