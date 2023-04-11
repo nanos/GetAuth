@@ -58,6 +58,14 @@
         form.scopes.value = sessionStorage.getItem('scopes') ?? '';
         form.client_name.value = sessionStorage.getItem('client_name') ?? '';
         form.redirect_uris.value = new URL('./return.html', window.location);
+
+        const params = new URLSearchParams(window.location.search);
+
+        for([key, value] of params) {
+            if(form[key] && form[key].value !== undefined) {
+               form[key].value = value;
+            }
+        }
         
         form
             .addEventListener('submit', (event) => {
