@@ -1,5 +1,8 @@
 # GetAuth for Mastodon
 
+> [!NOTE]
+> This project now lives at [code.thms.uk/michael/GetAuth](https://code.thms.uk/michael/GetAuth)
+
 A very simple static site to generate Mastodon OAuth tokens. 
 
 ## How to use GetAuth for Mastodon
